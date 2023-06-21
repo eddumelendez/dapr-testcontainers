@@ -50,22 +50,17 @@ public interface CommonContainers {
             .withNetworkAliases("redis")
             .withReuse(true);
 
-    GenericContainer<?> daprSidecar = new GenericContainer<>("daprio/daprd:edge")
-            .withCommand("./daprd",
-                    "-app-id", "write-app",
-                    "-placement-host-address", "placement:50006",
-                    "--dapr-listen-addresses=0.0.0.0",
-                    "-components-path", "/components")
-            .withExposedPorts(50001)
+    DaprContainer daprSidecar = new DaprContainer("daprio/daprd:edge")
+            .withAppId("write-app")
+            .withPlacementHostAddress("placement:50006")
             .withCopyFileToContainer(
                     MountableFile.forClasspathResource("components"),
                     "/components/")
             .withNetwork(daprNetwork)
             .withReuse(true);
 
-    GenericContainer<?> daprPlacement = new GenericContainer<>("daprio/dapr")
-            .withCommand("./placement", "-port", "50006")
-            .withExposedPorts(50006) // for wait
+    DaprContainer daprPlacement = new DaprContainer("daprio/dapr")
+            .enablePlacement()
             .withNetwork(daprNetwork)
             .withNetworkAliases("placement")
             .withReuse(true);
