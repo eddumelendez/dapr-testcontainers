@@ -1,4 +1,4 @@
-package com.salaboy.dapr.javaapp;
+package org.testcontainers.dapr;
 
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.utility.DockerImageName;

@@ -7,6 +7,7 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
+import org.testcontainers.dapr.DaprContainer;
 import org.testcontainers.utility.MountableFile;
 
 import java.util.List;
@@ -50,22 +51,16 @@ public interface CommonContainers {
             .withNetworkAliases("redis")
             .withReuse(true);
 
-    GenericContainer<?> daprSidecar = new GenericContainer<>("daprio/daprd:edge")
-            .withCommand("./daprd",
-                    "-app-id", "read-app",
-                    "-placement-host-address", "placement:50006",
-                    "--dapr-listen-addresses=0.0.0.0",
-                    "-components-path", "/components")
-            .withExposedPorts(50001)
+    DaprContainer daprSidecar = new DaprContainer("daprio/daprd:edge")
+            .withAppId("read-app")
+            .withPlacementHostAddress("placement:50006")
             .withCopyFileToContainer(
                     MountableFile.forClasspathResource("components"),
                     "/components/")
             .withNetwork(daprNetwork)
             .withReuse(true);
 
-    GenericContainer<?> daprPlacement = new GenericContainer<>("daprio/dapr")
-            .withCommand("./placement", "-port", "50006")
-            .withExposedPorts(50006) // for wait
+    DaprContainer daprPlacement = new DaprContainer("daprio/dapr")
             .withNetwork(daprNetwork)
             .withNetworkAliases("placement")
             .withReuse(true);
